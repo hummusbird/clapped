@@ -889,27 +889,37 @@ ${config.prefix}config [setting] [value] // Run ${config.prefix}config help for 
 
 // AUDIO FUNCTIONS
 
+async function searchYT(args){
+    args.splice(0, 1)
+    console.log("Searching YouTube for ", args)
+    var searchData = await ytAPI.GetListByKeyword(args, false)
+    for (i = 0; i < searchData.items.length; i++){
+        songInfo = await ytdl.getInfo(`https://youtube.com/watch?v=${searchData.items[i].id}`)
+        .catch( function() {
+            console.log("Invalid video");
+            return
+        });
+        if (songInfo) {
+            console.log("Vound Video: ", songInfo.videoDetails.title)
+            return songInfo
+        }
+    }
+    return songInfo
+}
+
 async function execute(message, serverQueue) {
     const args = message.content.split(" ");
     let songInfo;
     const voiceChannel = message.member.voice.channel;
     if (!voiceChannel) { return message.channel.send('```diff\n- Please join a voice channel.```') }
-
-    if (!args[1]){
+    if (!args[1]) { message.channel.send('```diff\n- Please specify search terms or a URL```')}
+    if (args[1]){
         songInfo = await ytdl.getInfo(args[1])
-            .catch( function() {
+            .catch( async function() {
                 console.log("Invalid URL supplied");
-                message.channel.send('```diff\n- Invalid URL supplied!```')
+                message.channel.send('```diff\n- Invalid URL - Searching YouTube...```')
+                return songInfo = await searchYT(args)
             });
-    }
-    else {
-        var searchData = await ytAPI.GetListByKeyword(args, false)
-        songInfo = await ytdl.getInfo(`https://youtube.com/watch?v=${searchData.items[0].id}`)
-        .catch( function() {
-            console.log("Invalid video");
-            return
-        });
-
     }
     if (!songInfo) {
         message.channel.send('```diff\n- Video is private or unlisted!```')
@@ -997,7 +1007,7 @@ function play(guild, song) {
 }
 
 function printQueue(message, serverQueue){
-    if (!serverQueue) {return channel.message.send('```diff\n- The queue is currently empty.```')}
+    if (!serverQueue) {return message.channel.send('```diff\n- The queue is currently empty.```')}
     var songList = "";
     for (var song of serverQueue.songs){
         songList = songList + song.title + "\n"
