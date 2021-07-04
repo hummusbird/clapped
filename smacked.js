@@ -857,7 +857,7 @@ ${config.prefix}roll [int] // Roll a die
 ${config.prefix}map [mapgroup] [int] // Chooses some CS:GO maps for you to play
 ${config.prefix}dm [user] [message] // Sends a direct message to the mentioned user
 + AUDIO COMMANDS
-${config.prefix}play [YouTube URL] // Plays YouTube videos in your current channel
+${config.prefix}play [string] // Plays YouTube audio in your current channel
 ${config.prefix}skip // Skips to next song in queue
 ${config.prefix}stop // Stops audio playback
 ${config.prefix}queue // Lists currently queued songs
@@ -900,7 +900,7 @@ async function searchYT(args){
             return
         });
         if (songInfo) {
-            console.log("Vound Video: ", songInfo.videoDetails.title)
+            console.log("Found Video: ", songInfo.videoDetails.title)
             return songInfo
         }
     }
