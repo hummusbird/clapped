@@ -473,7 +473,7 @@ client.on('message', async message => {
                 console.log(`censored ${string}`)
                 log(message.author, message.author, "censor", message)
             })
-            message.channel.send('```diff\n+ Added to censor list.```')
+            message.channel.send('```diff\n+ Added phrase to censor list!```')
             if (message.deletable) {message.delete()}
         }
     }
