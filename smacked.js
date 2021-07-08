@@ -1020,4 +1020,6 @@ function printQueue(message, serverQueue){
     return(message.channel.send(`\`\`\`${songList}\`\`\``))
 }
 
-client.login(process.env.BOT_TOKEN)
+args = process.argv.slice(2);
+if (args[0] = "dev") { client.login(process.env.DEV_TOKEN) }
+else { client.login(process.env.BOT_TOKEN) }
