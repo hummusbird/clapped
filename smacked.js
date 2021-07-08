@@ -1057,5 +1057,5 @@ function printQueue(message, serverQueue){
 }
 
 args = process.argv.slice(2);
-if (args[0] = "dev") { client.login(process.env.DEV_TOKEN) }
+if (args[0] == "dev") { client.login(process.env.DEV_TOKEN) }
 else { client.login(process.env.BOT_TOKEN) }
