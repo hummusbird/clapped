@@ -30,7 +30,7 @@ client.on('ready', async () => {
             
             var config = {
                 guildID: e.id,
-                prefix: "£",
+                prefix: "~",
 
                 logChannel: logChannel,
                 loggingEnabled: loggingEnabled,
