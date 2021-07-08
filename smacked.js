@@ -332,7 +332,7 @@ client.on('message', async message => {
                         log(message.author, user, "kick", message)
                 })
                     .catch(err => {
-                        message.channel.send(`\`\`\`diff\n- unable to kick <@${user.id}>\`\`\``)
+                        message.channel.send(`\`\`\`diff\n- Unable to kick <@${user.id}>\`\`\``)
                         console.log(err)
                 })
             }
@@ -362,7 +362,7 @@ client.on('message', async message => {
                         log(message.author, user, "ban", message)
                 })
                     .catch(err => {
-                        message.channel.send(`\`\`\`diff\n- unable to ban <@${user.id}>\`\`\``)
+                        message.channel.send(`\`\`\`diff\n- Unable to ban <@${user.id}>\`\`\``)
                         console.log(err)
                 })
             }
@@ -453,7 +453,7 @@ client.on('message', async message => {
 
 
             message.channel.bulkDelete(purge)
-            .catch(error => message.channel.send("Unable to purge messages."))
+            .catch(error => message.channel.send('```diff\n- Unable to purge messages.```'))
 
 
             log(message.author, message.author, "purge", message)
@@ -469,7 +469,7 @@ client.on('message', async message => {
         else if (msgArray[1] && message.content.startsWith(config.prefix + "censor ")){
             string = message.content.replace(config.prefix + "censor ", "")
             fs.appendFile(`${config.guildID}_censored.txt`, "\n" + string.toLowerCase(), function (err) {
-                if (err) throw err;
+                if (err) {console.log(`Error adding to censor list.`)};
                 console.log(`censored ${string}`)
                 log(message.author, message.author, "censor", message)
             })
@@ -496,15 +496,20 @@ client.on('message', async message => {
                         break;
                     }
                 }
-
-                dataArray.splice(lineIndex, 1);
-                let newData = dataArray.join('\n')
-                fs.writeFile(`${config.guildID}_censored.txt`, newData, (err) => {
-                    if (err) throw err;
-                    message.channel.send('```diff\n+ Removed phrase from censor list!```')
-                    console.log(`uncensored ${removeString}`)
-                    log(message.author, message.author, "uncensor", message)
-                })
+                
+                if (lineIndex == -1){
+                    message.channel.send('```diff\n- Unable to remove from censor list.```')
+                }
+                else {
+                    dataArray.splice(lineIndex, 1);
+                    let newData = dataArray.join('\n')
+                    fs.writeFile(`${config.guildID}_censored.txt`, newData, (err) => {
+                        if (err) {console.log(`Error removing from censor list.`)};
+                        message.channel.send('```diff\n+ Removed phrase from censor list!```')
+                        console.log(`uncensored ${removeString}`)
+                        log(message.author, message.author, "uncensor", message)
+                    })
+                }
             })
         }
     }
