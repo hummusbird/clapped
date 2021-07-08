@@ -260,6 +260,42 @@ client.on('message', async message => {
         var time = moment.duration(moment().diff(uptime))
         message.channel.send(`This bot has been up for ${time.days()} days, ${time.hours()} hours, ${time.minutes()} minutes and ${time.seconds()} seconds`)
     }
+
+    else if (message.content.startsWith(config.prefix + "status")) {
+        if (message.author.id == 403609667722412054 || message.author.id == 375671695240855553) {
+            var status = msgArray[1]
+            var statusType = msgArray[2]
+            var words = message.content.split(statusType)[1].trim()
+
+            if ((status == "online" || status == "idle" || status == "dnd") && (statusType == "STREAMING" || statusType == "LISTENING" || statusType == "PLAYING" || statusType == "WATCHING")) {
+                client.user.setStatus(status)
+
+                if (statusType == "STREAMING" || statusType == "WATCHING") {
+                    client.user.setPresence({
+                        activity: {
+                            name: words,
+                            url: "https://www.twitch.tv/monstercat",
+                            type: statusType
+                        }
+                    })
+                } else {
+                    client.user.setPresence({
+                        activity: {
+                            name: words,
+                            type: statusType
+                        }
+                    })
+                }
+
+                message.channel.send("```diff\n+ W```")
+                console.log(`${message.author.username} set status to ${status}, ${statusType}, ${words}`)
+            } else {
+                message.channel.send("```diff\n- invalid lol >:)```")
+            }
+        } else {
+            message.channel.send(noPerms(message, config))
+        }
+    }
     
     else if (message.channel.name == "colours"){
 
