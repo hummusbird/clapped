@@ -484,7 +484,7 @@ client.on('message', async message => {
         }
         else if (!msgArray[1]) {message.channel.send('```diff\n- Please include a phrase or word to uncensor```')}
         else if (msgArray[1] && message.content.startsWith(config.prefix + "uncensor ")) {
-            removeString = message.content.replace(config.prefix + "uncensor")
+            removeString = message.content.replace(config.prefix + "uncensor ", "")
             fs.readFile(`${config.guildID}_censored.txt`, 'utf8', function(err, data) {
                 if (err) throw error;
                 let dataArray = data.split('\n')
