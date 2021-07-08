@@ -1,3 +1,5 @@
 node_modules
-*.env
+.env
 ".env"
+*_config.json
+*_censored.txt

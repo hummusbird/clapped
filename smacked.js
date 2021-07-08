@@ -20,7 +20,7 @@ client.on('ready', async () => {
 
     console.log("\x1b[35m%s\x1b[0m", `Loading guild settings:`)
     guilds.forEach(async e => {
-        if (fs.existsSync(`${e.id}.json`)){ loadConfig(e) }
+        if (fs.existsSync(`${e.id}_config.json`)){ loadConfig(e) }
         else{
             console.log("\x1b[33m%s\x1b[0m",`Guild ${e.name} does not have settings file, Creating....`)
             
@@ -30,7 +30,7 @@ client.on('ready', async () => {
             
             var config = {
                 guildID: e.id,
-                prefix: "~",
+                prefix: "£",
 
                 logChannel: logChannel,
                 loggingEnabled: loggingEnabled,
@@ -46,7 +46,7 @@ client.on('ready', async () => {
                 mutedRole: e.roles.cache.find(mutedRole => mutedRole.name == "Muted")
             }
 
-            fs.appendFile(`${e.id}.json`, JSON.stringify(config), function (err) {
+            fs.appendFile(`${e.id}_config.json`, JSON.stringify(config), function (err) {
                 if (err) throw err;
                 console.log('Saved!')
                 loadConfig(e)
@@ -119,13 +119,13 @@ client.on('ready', async () => {
 async function loadConfig(e) {
     if (guildSettings.find(config => config.guildID == e.id)){
         var index = guildSettings.indexOf(e)
-        var data = fs.readFileSync(`${e.id}.json`, 'utf8')
+        var data = fs.readFileSync(`${e.id}_config.json`, 'utf8')
         guildSettings[index] = JSON.parse(data)
         console.log("\x1b[33m%s\x1b[0m",`${e.name} reloaded`)
     }
     else {
         try {
-            var data = fs.readFileSync(`${e.id}.json`, 'utf8')
+            var data = fs.readFileSync(`${e.id}_config.json`, 'utf8')
             guildSettings.push(JSON.parse(data))
             console.log(`loading ${e.name} config file.`)
         } 
@@ -137,7 +137,7 @@ async function loadConfig(e) {
 }
 
 function writeConfig(config, guild){
-    fs.writeFile(`${guild.id}.json`, JSON.stringify(config), function (err) {
+    fs.writeFile(`${guild.id}_config.json`, JSON.stringify(config), function (err) {
         if (err) throw err;
         console.log(`Saved new config for ${guild.name}`)
         loadConfig(guild)
