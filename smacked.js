@@ -207,7 +207,7 @@ client.on('guildMemberAdd', async member => {
             .setColor('#000000')
             .setTitle(config.welcomeTitle.replace('{member}', member.user.username).replace('{server}', member.guild.name))
             .setDescription(config.welcomeMessage.replace('{member}', member.user.username).replace('{server}', member.guild.name))
-            .setThumbnail(member.user.displayAvatarURL( { format: 'png', size: 1024 } ))
+            .setThumbnail(member.user.displayAvatarURL( { size: 1024 } ))
             .setTimestamp()
 
         member.guild.systemChannel.send(greetingEmbed)
@@ -748,7 +748,7 @@ client.on('message', async message => {
 
     else if (message.content.startsWith(config.prefix + "avatar") || message.content.startsWith(config.prefix + "av") || message.content.startsWith(config.prefix + "pfp")){
         var user = message.mentions.users.first() || message.member.user
-        message.channel.send(user.displayAvatarURL( { format: 'png', size: 1024 } ))
+        message.channel.send(user.displayAvatarURL( { size: 1024 } ))
     }
 
     else if (message.content.startsWith(config.prefix + "userinfo") || message.content.startsWith(config.prefix + "ui")){
@@ -763,7 +763,7 @@ client.on('message', async message => {
             if (!rolemap) rolemap = "None";
 
             const UIEmbed = new Discord.MessageEmbed()
-                .setThumbnail(user.displayAvatarURL( { format: 'png', size: 1024 } ))
+                .setThumbnail(user.displayAvatarURL( { size: 1024 } ))
                 .setColor("#000000")
                 .setTitle(`${user.tag}'s info`)
                 .addField('Account created:', moment(user.createdAt).format('llll'), true)
