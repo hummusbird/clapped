@@ -668,7 +668,7 @@ client.on('message', async message => {
             }
         }
     }
-    else if (message.content.startsWith(config.prefix + "settings") || message.content.startsWith(config.prefix + "config")){
+    else if (message.content == (config.prefix + "settings") || message.content == (config.prefix + "config")){
         if (!msgArray[1]) {
             var settingsEmbed = new Discord.MessageEmbed()
                 .setColor('#000000')
