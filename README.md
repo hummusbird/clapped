@@ -1,9 +1,5 @@
 # smacked-bot
 
-## TODO: 
+check projects tab or die
 
-- check if phrase is already censored when censoring
-- check if phrase isn't censored when uncensoring
-- add playlist support to audio shit
-- make hugh do above
-- add gif support for embeds
+https://github.com/hummusbird/smacked/projects/1

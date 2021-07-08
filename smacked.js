@@ -20,7 +20,7 @@ client.on('ready', async () => {
 
     console.log("\x1b[35m%s\x1b[0m", `Loading guild settings:`)
     guilds.forEach(async e => {
-        if (fs.existsSync(`${e.id}.json`)){ loadConfig(e) }
+        if (fs.existsSync(`${e.id}_config.json`)){ loadConfig(e) }
         else{
             console.log("\x1b[33m%s\x1b[0m",`Guild ${e.name} does not have settings file, Creating....`)
             
@@ -30,7 +30,7 @@ client.on('ready', async () => {
             
             var config = {
                 guildID: e.id,
-                prefix: "~",
+                prefix: "£",
 
                 logChannel: logChannel,
                 loggingEnabled: loggingEnabled,
@@ -46,7 +46,7 @@ client.on('ready', async () => {
                 mutedRole: e.roles.cache.find(mutedRole => mutedRole.name == "Muted")
             }
 
-            fs.appendFile(`${e.id}.json`, JSON.stringify(config), function (err) {
+            fs.appendFile(`${e.id}_config.json`, JSON.stringify(config), function (err) {
                 if (err) throw err;
                 console.log('Saved!')
                 loadConfig(e)
@@ -119,13 +119,13 @@ client.on('ready', async () => {
 async function loadConfig(e) {
     if (guildSettings.find(config => config.guildID == e.id)){
         var index = guildSettings.indexOf(e)
-        var data = fs.readFileSync(`${e.id}.json`, 'utf8')
+        var data = fs.readFileSync(`${e.id}_config.json`, 'utf8')
         guildSettings[index] = JSON.parse(data)
         console.log("\x1b[33m%s\x1b[0m",`${e.name} reloaded`)
     }
     else {
         try {
-            var data = fs.readFileSync(`${e.id}.json`, 'utf8')
+            var data = fs.readFileSync(`${e.id}_config.json`, 'utf8')
             guildSettings.push(JSON.parse(data))
             console.log(`loading ${e.name} config file.`)
         } 
@@ -137,7 +137,7 @@ async function loadConfig(e) {
 }
 
 function writeConfig(config, guild){
-    fs.writeFile(`${guild.id}.json`, JSON.stringify(config), function (err) {
+    fs.writeFile(`${guild.id}_config.json`, JSON.stringify(config), function (err) {
         if (err) throw err;
         console.log(`Saved new config for ${guild.name}`)
         loadConfig(guild)
@@ -260,6 +260,42 @@ client.on('message', async message => {
         var time = moment.duration(moment().diff(uptime))
         message.channel.send(`This bot has been up for ${time.days()} days, ${time.hours()} hours, ${time.minutes()} minutes and ${time.seconds()} seconds`)
     }
+
+    else if (message.content.startsWith(config.prefix + "status")) {
+        if (message.author.id == 403609667722412054 || message.author.id == 375671695240855553) {
+            var status = msgArray[1]
+            var statusType = msgArray[2]
+            var words = message.content.split(statusType)[1].trim()
+
+            if ((status == "online" || status == "idle" || status == "dnd") && (statusType == "STREAMING" || statusType == "LISTENING" || statusType == "PLAYING" || statusType == "WATCHING")) {
+                client.user.setStatus(status)
+
+                if (statusType == "STREAMING" || statusType == "WATCHING") {
+                    client.user.setPresence({
+                        activity: {
+                            name: words,
+                            url: "https://www.twitch.tv/monstercat",
+                            type: statusType
+                        }
+                    })
+                } else {
+                    client.user.setPresence({
+                        activity: {
+                            name: words,
+                            type: statusType
+                        }
+                    })
+                }
+
+                message.channel.send("```diff\n+ W```")
+                console.log(`${message.author.username} set status to ${status}, ${statusType}, ${words}`)
+            } else {
+                message.channel.send("```diff\n- invalid lol >:)```")
+            }
+        } else {
+            message.channel.send(noPerms(message, config))
+        }
+    }
     
     else if (message.channel.name == "colours"){
 
@@ -332,7 +368,7 @@ client.on('message', async message => {
                         log(message.author, user, "kick", message)
                 })
                     .catch(err => {
-                        message.channel.send(`\`\`\`diff\n- unable to kick <@${user.id}>\`\`\``)
+                        message.channel.send(`\`\`\`diff\n- Unable to kick <@${user.id}>\`\`\``)
                         console.log(err)
                 })
             }
@@ -362,7 +398,7 @@ client.on('message', async message => {
                         log(message.author, user, "ban", message)
                 })
                     .catch(err => {
-                        message.channel.send(`\`\`\`diff\n- unable to ban <@${user.id}>\`\`\``)
+                        message.channel.send(`\`\`\`diff\n- Unable to ban <@${user.id}>\`\`\``)
                         console.log(err)
                 })
             }
@@ -453,7 +489,7 @@ client.on('message', async message => {
 
 
             message.channel.bulkDelete(purge)
-            .catch(error => message.channel.send("Unable to purge messages."))
+            .catch(error => message.channel.send('```diff\n- Unable to purge messages.```'))
 
 
             log(message.author, message.author, "purge", message)
@@ -469,7 +505,7 @@ client.on('message', async message => {
         else if (msgArray[1] && message.content.startsWith(config.prefix + "censor ")){
             string = message.content.replace(config.prefix + "censor ", "")
             fs.appendFile(`${config.guildID}_censored.txt`, "\n" + string.toLowerCase(), function (err) {
-                if (err) throw err;
+                if (err) {console.log(`Error adding to censor list.`)};
                 console.log(`censored ${string}`)
                 log(message.author, message.author, "censor", message)
             })
@@ -484,7 +520,7 @@ client.on('message', async message => {
         }
         else if (!msgArray[1]) {message.channel.send('```diff\n- Please include a phrase or word to uncensor```')}
         else if (msgArray[1] && message.content.startsWith(config.prefix + "uncensor ")) {
-            removeString = message.content.replace(config.prefix + "uncensor")
+            removeString = message.content.replace(config.prefix + "uncensor ", "")
             fs.readFile(`${config.guildID}_censored.txt`, 'utf8', function(err, data) {
                 if (err) throw error;
                 let dataArray = data.split('\n')
@@ -496,15 +532,20 @@ client.on('message', async message => {
                         break;
                     }
                 }
-
-                dataArray.splice(lineIndex, 1);
-                let newData = dataArray.join('\n')
-                fs.writeFile(`${config.guildID}_censored.txt`, newData, (err) => {
-                    if (err) throw err;
-                    message.channel.send('```diff\n+ Removed phrase from censor list!```')
-                    console.log(`uncensored ${removeString}`)
-                    log(message.author, message.author, "uncensor", message)
-                })
+                
+                if (lineIndex == -1){
+                    message.channel.send('```diff\n- Unable to remove from censor list.```')
+                }
+                else {
+                    dataArray.splice(lineIndex, 1);
+                    let newData = dataArray.join('\n')
+                    fs.writeFile(`${config.guildID}_censored.txt`, newData, (err) => {
+                        if (err) {console.log(`Error removing from censor list.`)};
+                        message.channel.send('```diff\n+ Removed phrase from censor list!```')
+                        console.log(`uncensored ${removeString}`)
+                        log(message.author, message.author, "uncensor", message)
+                    })
+                }
             })
         }
     }
@@ -1015,4 +1056,6 @@ function printQueue(message, serverQueue){
     return(message.channel.send(`\`\`\`${songList}\`\`\``))
 }
 
-client.login(process.env.BOT_TOKEN)
+args = process.argv.slice(2);
+if (args[0] = "dev") { client.login(process.env.DEV_TOKEN) }
+else { client.login(process.env.BOT_TOKEN) }
