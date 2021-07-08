@@ -501,8 +501,8 @@ client.on('message', async message => {
                 let newData = dataArray.join('\n')
                 fs.writeFile(`${config.guildID}_censored.txt`, newData, (err) => {
                     if (err) throw err;
-                    message.channel.send('```diff\n+ Removed word from censor list!```')
-                    console.log()
+                    message.channel.send('```diff\n+ Removed phrase from censor list!```')
+                    console.log(`uncensored ${removeString}`)
                     log(message.author, message.author, "uncensor", message)
                 })
             })
