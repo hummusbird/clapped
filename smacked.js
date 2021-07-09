@@ -153,7 +153,7 @@ function log(mod, user, action, msg){
         var fielddata = `performed by ${mod.tag}`
 
         if (action == "ban"){ colour = "#ff3838" }
-        else if (action == "kick"){ colour = "#ff8e38" }
+        else if (action == "kick"){ colour = "#ff3838" }
         else if (action == "delete"){ 
             colour = "#ff8e38"
             title = "Deleted message"
@@ -170,12 +170,16 @@ function log(mod, user, action, msg){
             title = `Config changed!`
         }
         else if (action == "censor") {
-            colour = "#ff8e38"
+            colour = "#ff3838"
             title = "Censored phrase"
         }
         else if (action == "uncensor") {
-            colour = "#ff8e38"
+            colour = "#68d629"
             title = "Uncensored phrase"
+        }
+        else if (action = "nick"){
+            colour = "#f42069"
+            title = "Changed Nickname"
         }
 
         const logEmbed = new Discord.MessageEmbed()
@@ -203,7 +207,7 @@ client.on('guildMemberAdd', async member => {
             .setColor('#000000')
             .setTitle(config.welcomeTitle.replace('{member}', member.user.username).replace('{server}', member.guild.name))
             .setDescription(config.welcomeMessage.replace('{member}', member.user.username).replace('{server}', member.guild.name))
-            .setThumbnail(member.user.displayAvatarURL( { format: 'png', size: 1024 } ))
+            .setThumbnail(member.user.displayAvatarURL( { size: 1024 } ))
             .setTimestamp()
 
         member.guild.systemChannel.send(greetingEmbed)
@@ -559,6 +563,20 @@ client.on('message', async message => {
             message.author.send(attachment)
         }
     }
+
+    else if (message.content.startsWith(config.prefix + "nickname") || message.content.startsWith(config.prefix + "nick")){
+        if (!message.member.hasPermission('MANAGE_NICKNAMES')) { return message.channel.send(noPerms(message, config)) }
+        else {
+            var user = message.mentions.members.first() || message.member
+            nickname = message.content.replace(msgArray[0], '').replace(user, '').replace(`<@!${user.id}>`, '').trim()
+            user.setNickname(nickname)
+            .catch(function() {
+                message.channel.send('```diff\n- Failed to change nickname```')
+            })
+            console.log(`${message.author.username} set ${user.user.username}'s nickname to ${nickname}`)
+            log(message.author, user.user, "nick", message)
+        }
+    }
     
     else if (message.content.startsWith(config.prefix + "settings ") || message.content.startsWith(config.prefix + "config ")){
         if (!msgArray[1]) {
@@ -730,7 +748,7 @@ client.on('message', async message => {
 
     else if (message.content.startsWith(config.prefix + "avatar") || message.content.startsWith(config.prefix + "av") || message.content.startsWith(config.prefix + "pfp")){
         var user = message.mentions.users.first() || message.member.user
-        message.channel.send(user.displayAvatarURL( { format: 'png', size: 1024 } ))
+        message.channel.send(user.displayAvatarURL( { size: 1024 } ))
     }
 
     else if (message.content.startsWith(config.prefix + "userinfo") || message.content.startsWith(config.prefix + "ui")){
@@ -745,7 +763,7 @@ client.on('message', async message => {
             if (!rolemap) rolemap = "None";
 
             const UIEmbed = new Discord.MessageEmbed()
-                .setThumbnail(user.displayAvatarURL( { format: 'png', size: 1024 } ))
+                .setThumbnail(user.displayAvatarURL( { size: 1024 } ))
                 .setColor("#000000")
                 .setTitle(`${user.tag}'s info`)
                 .addField('Account created:', moment(user.createdAt).format('llll'), true)
