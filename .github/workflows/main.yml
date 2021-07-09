@@ -17,12 +17,12 @@ jobs:
     steps:
 
       - name: deployNodeJS
-        uses: appleboy/ssh-action@v0.1.4
+        uses: garygrossgarten/github-action-ssh@release
         with:
           host: ${{secrets.SSH_HOST}}
           username: ${{secrets.SSH_USERNAME}}
           password: ${{secrets.SSH_PASSWORD}}
-          script: |
+          command: |
             cd desktop
             cd smacked
             git pull
