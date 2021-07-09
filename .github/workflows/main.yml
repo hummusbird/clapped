@@ -22,8 +22,4 @@ jobs:
           host: ${{secrets.SSH_HOST}}
           username: ${{secrets.SSH_USERNAME}}
           password: ${{secrets.SSH_PASSWORD}}
-          command: |
-            cd desktop
-            cd smacked
-            git pull
-            pm2 restart smacked.js
+          command: echo balls >> FUCK.txt
