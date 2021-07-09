@@ -23,5 +23,7 @@ jobs:
           username: ${{secrets.SSH_USERNAME}}
           password: ${{secrets.SSH_PASSWORD}}
           script: |
-            echo balls > FINDME.txt
-
+            cd desktop
+            cd smacked
+            git pull
+            pm2 restart smacked.js
