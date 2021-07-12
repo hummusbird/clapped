@@ -920,7 +920,7 @@ ${config.prefix}play [string] // Plays YouTube audio in your current channel
 ${config.prefix}skip // Skips to next song in queue
 ${config.prefix}stop // Stops audio playback
 ${config.prefix}queue // Lists currently queued songs
-${message.member.hasPermission("MANAGE_NICKNAMES" ? "+ USER MANAGEMENT" : '- FOR USERS WITH "MANAGE_NICKNAMES" PERMISSION')}
+${message.member.hasPermission("MANAGE_NICKNAMES") ? "+ USER MANAGEMENT" : '- FOR USERS WITH "MANAGE_NICKNAMES" PERMISSION'}
 ${config.prefix}nickname [user] [string]
 ${message.member.hasPermission("BAN_MEMBERS") ? "+ MODERATION COMMANDS" : '- FOR USERS WITH "BAN_MEMBERS" PERMISSION'}
 ${config.prefix}kick [user] // kicks user
