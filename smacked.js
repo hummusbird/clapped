@@ -271,7 +271,7 @@ client.on('message', async message => {
             var statusType = msgArray[2]
             var words = message.content.split(statusType)[1].trim()
 
-            if ((status == "online" || status == "idle" || status == "dnd") && (statusType == "STREAMING" || statusType == "LISTENING" || statusType == "PLAYING" || statusType == "WATCHING")) {
+            if ((status == "online" || status == "idle" || status == "dnd" || status == "invisible") && (statusType == "STREAMING" || statusType == "LISTENING" || statusType == "PLAYING" || statusType == "WATCHING")) {
                 client.user.setStatus(status)
 
                 if (statusType == "STREAMING" || statusType == "WATCHING") {
@@ -920,8 +920,6 @@ ${config.prefix}play [string] // Plays YouTube audio in your current channel
 ${config.prefix}skip // Skips to next song in queue
 ${config.prefix}stop // Stops audio playback
 ${config.prefix}queue // Lists currently queued songs
-${message.member.hasPermission("MANAGE_NICKNAMES") ? "+ USER MANAGEMENT" : '- FOR USERS WITH "MANAGE_NICKNAMES" PERMISSION'}
-${config.prefix}nickname [user] [string]
 ${message.member.hasPermission("BAN_MEMBERS") ? "+ MODERATION COMMANDS" : '- FOR USERS WITH "BAN_MEMBERS" PERMISSION'}
 ${config.prefix}kick [user] // kicks user
 ${config.prefix}ban [user] // bans user
