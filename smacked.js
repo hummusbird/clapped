@@ -20,101 +20,115 @@ client.on('ready', async () => {
 
     console.log("\x1b[35m%s\x1b[0m", `Loading guild settings:`)
     guilds.forEach(async e => {
-        if (fs.existsSync(`${e.id}_config.json`)){ loadConfig(e) }
-        else{
-            console.log("\x1b[33m%s\x1b[0m",`Guild ${e.name} does not have settings file, Creating....`)
-            
-            var logChannel = e.channels.cache.find(logChannel => logChannel.name == "logs")
-            var loggingEnabled = true
-            if (!logChannel) { logChannel = null; loggingEnabled = false}
-            
-            var config = {
-                guildID: e.id,
-                prefix: "~",
-
-                logChannel: logChannel,
-                loggingEnabled: loggingEnabled,
-
-                noPermsReply: "\`\`\`diff\n- You don't have the required permissions.\`\`\`",
-                
-                welcomeTitle: "{member} has joined the server!",
-                welcomeMessage: "Welcome to {server}!",
-                welcomeEnabled: true,
-
-                leaveMessage: "{member} has abandonded {server}!",
-                leaveEnabled: true,
-                mutedRole: e.roles.cache.find(mutedRole => mutedRole.name == "Muted")
-            }
-
-            fs.appendFile(`${e.id}_config.json`, JSON.stringify(config), function (err) {
-                if (err) throw err;
-                console.log('Saved!')
-                loadConfig(e)
-            })
-        }
-
-        var mutedRole = e.roles.cache.find(mutedRole => mutedRole.name == "Muted")
-        if (!mutedRole) {
-            try {
-            console.log("\x1b[33m%s\x1b[0m","No muted role. Creating...")
-            mutedRole = await e.roles.create({
-                data: {
-                    name: "Muted",
-                    color: '#262626',
-                    permissions: 37031488
-                }
-            })
-            } 
-            catch{
-                console.log("\x1b[31m%s\x1b[0m", `Error creating muted role in ${e.name}, bot most likely doesn't have permission.`)
-            }
-        }
-        else if (mutedRole.permissions.bitfield != 37031488){
-            mutedRole.setPermissions(37031488)
-            .catch(function() {
-                console.log("\x1b[31m%s\x1b[0m", `Error modifying mutedrole's permissions in ${e.name}, bot most likely doesn't have permission.`)
-            })
-            console.log("\x1b[33m%s\x1b[0m", `Changed Muted role's permissions in ${e.name}`)
-        }
-        const channels = e.channels.cache.map(channel => channel);
-        if (mutedRole) { for ( const channel of channels ) {
-            mutedPermissionOverwrite = channel.permissionOverwrites.get(mutedRole.id)
-            if (!mutedPermissionOverwrite || (mutedPermissionOverwrite && mutedPermissionOverwrite.deny.bitfield != 2160704)) {
-                channel.updateOverwrite( mutedRole, {
-                    SEND_MESSAGES: false,
-                    SPEAK: false,
-                    SEND_TTS_MESSAGES: false,
-                    ADD_REACTIONS: false,
-                    EMBED_LINKS: false,
-                    ATTACH_FILES: false,
-                    MANAGE_MESSAGES: false
-                })
-                    .catch(function() {
-                        console.log("\x1b[31m%s\x1b[0m", `Error modifying channel permissions for #${channel.name} in ${e.name}, bot most likely doesn't have permission.`)
-                    })
-                    .then(console.log("\x1b[33m%s\x1b[0m", `Changed permissions in #${channel.name}`))
-            }
-        }}
-
-        const newconfig = guildSettings.find(config => config.guildID == e.id)
-        if (newconfig && !newconfig.mutedRole){
-            console.log("\x1b[33m%s\x1b[0m", `${e.name} doesn't have muted role attached to config. Modifying...`)
-            newconfig.mutedRole = mutedRole
-            writeConfig(newconfig, e)
-        }
-
-        if (!fs.existsSync(`${e.id}_censored.txt`))
-        {
-            fs.writeFileSync(`${e.id}_censored.txt`, 'nword', function (err) {
-                if (err) throw err;
-                console.log("\x1b[33m%s\x1b[0m","No Censor list. Creating...")
-            })
-        }
-        console.log("\x1b[32m%s\x1b[0m",`${e.name} successfully loaded.`)
+        if ( fs.existsSync(`${e.id}_config.json`) ) { loadConfig(e) }
+        else { createConfig(e) }        
     })
 });
 
+client.on('guildCreate', async Guild => {
+    console.log("\x1b[32m", `Joined new guild: ${Guild.name}`)
+    if ( fs.existsSync(`${Guild.id}_config.json`) ) { loadConfig(Guild) }
+    else { createConfig(Guild) }     
+})
+
+client.on('guildDelete', async Guild => {
+    console.log("\x1b[31m", `Kicked from Guild ${Guild.name}`)
+})
+
 // CONFIG FUNCTIONS
+
+async function createConfig(e) {
+    console.log("\x1b[33m%s\x1b[0m",`Guild ${e.name} does not have settings file, Creating....`)
+    
+    var logChannel = e.channels.cache.find(logChannel => logChannel.name == "logs")
+    var loggingEnabled = true
+    if (!logChannel) { logChannel = null; loggingEnabled = false}
+    
+    var config = {
+        guildID: e.id,
+        prefix: "~",
+
+        logChannel: logChannel,
+        loggingEnabled: loggingEnabled,
+
+        noPermsReply: "\`\`\`diff\n- You don't have the required permissions.\`\`\`",
+        
+        welcomeTitle: "{member} has joined the server!",
+        welcomeMessage: "Welcome to {server}!",
+        welcomeEnabled: true,
+
+        leaveMessage: "{member} has abandonded {server}!",
+        leaveEnabled: true,
+        mutedRole: e.roles.cache.find(mutedRole => mutedRole.name == "Muted")
+    }
+
+    fs.appendFile(`${e.id}_config.json`, JSON.stringify(config), function (err) {
+        if (err) throw err;
+        console.log('Saved!')
+        loadConfig(e)
+    })
+
+    //muted role shit
+
+    var mutedRole = e.roles.cache.find(mutedRole => mutedRole.name == "Muted")
+    if (!mutedRole) {
+        try {
+        console.log("\x1b[33m%s\x1b[0m","No muted role. Creating...")
+        mutedRole = await e.roles.create({
+            data: {
+                name: "Muted",
+                color: '#262626',
+                permissions: 37031488
+            }
+        })
+        } 
+        catch{
+            console.log("\x1b[31m%s\x1b[0m", `Error creating muted role in ${e.name}, bot most likely doesn't have permission.`)
+        }
+    }
+    else if (mutedRole.permissions.bitfield != 37031488){
+        mutedRole.setPermissions(37031488)
+        .catch(function() {
+            console.log("\x1b[31m%s\x1b[0m", `Error modifying mutedrole's permissions in ${e.name}, bot most likely doesn't have permission.`)
+        })
+        console.log("\x1b[33m%s\x1b[0m", `Changed Muted role's permissions in ${e.name}`)
+    }
+    const channels = e.channels.cache.map(channel => channel);
+    if (mutedRole) { for ( const channel of channels ) {
+        mutedPermissionOverwrite = channel.permissionOverwrites.get(mutedRole.id)
+        if (!mutedPermissionOverwrite || (mutedPermissionOverwrite && mutedPermissionOverwrite.deny.bitfield != 2160704)) {
+            channel.updateOverwrite( mutedRole, {
+                SEND_MESSAGES: false,
+                SPEAK: false,
+                SEND_TTS_MESSAGES: false,
+                ADD_REACTIONS: false,
+                EMBED_LINKS: false,
+                ATTACH_FILES: false,
+                MANAGE_MESSAGES: false
+            })
+                .catch(function() {
+                    console.log("\x1b[31m%s\x1b[0m", `Error modifying channel permissions for #${channel.name} in ${e.name}, bot most likely doesn't have permission.`)
+                })
+                .then(console.log("\x1b[33m%s\x1b[0m", `Changed permissions in #${channel.name}`))
+        }
+    }}
+
+    const newconfig = guildSettings.find(config => config.guildID == e.id)
+    if (newconfig && !newconfig.mutedRole){
+        console.log("\x1b[33m%s\x1b[0m", `${e.name} doesn't have muted role attached to config. Modifying...`)
+        newconfig.mutedRole = mutedRole
+        writeConfig(newconfig, e)
+    }
+
+    if (!fs.existsSync(`${e.id}_censored.txt`))
+    {
+        fs.writeFileSync(`${e.id}_censored.txt`, 'nword', function (err) {
+            if (err) throw err;
+            console.log("\x1b[33m%s\x1b[0m","No Censor list. Creating...")
+        })
+    }
+    console.log("\x1b[32m%s\x1b[0m",`${e.name} successfully loaded.`)
+}
 
 async function loadConfig(e) {
     if (guildSettings.find(config => config.guildID == e.id)){
