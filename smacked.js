@@ -46,7 +46,7 @@ async function createConfig(e) {
     
     var config = {
         guildID: e.id,
-        prefix: "!",
+        prefix: "~",
 
         logChannel: logChannel,
         loggingEnabled: loggingEnabled,
