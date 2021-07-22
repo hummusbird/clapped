@@ -939,6 +939,8 @@ ${config.prefix}kick [user] // kicks user
 ${config.prefix}ban [user] // bans user
 ${config.prefix}mute [user] // mutes user
 ${config.prefix}unmute [user] // unmutes user
+${message.member.hasPermission("MANAGE_NICKNAMES") ? "+ USER MANAGEMENT" : '- FOR USERS WITH "MANAGE_NICKNAMES" PERMISSION'}
+${config.prefix}nickname [user] [string]
 ${message.member.hasPermission("MANAGE_MESSAGES") ? "+ MODERATION COMMANDS" : '- FOR USERS WITH "MANAGE_MESSAGES" PERMISSION'}
 ${config.prefix}censor [phrase] // Censors phrase
 ${config.prefix}uncensor [phrase] // Uncensors phrase
