@@ -9,7 +9,6 @@ const client = new Discord.Client();
 const uptime = new Date()
 var guildSettings = []
 const queue = new Map();
-//test
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
