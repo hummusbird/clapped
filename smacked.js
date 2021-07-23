@@ -1,4 +1,4 @@
-let { Client: DiscordClient, Message } = require('discord.js'),
+let { Client: DiscordClient, Message, MessageEmbed, MessageAttachment } = require('Discord.js'),
     fs = require('fs'),
     ytdl = require("ytdl-core"),
     moment = require('moment'),
@@ -6,7 +6,7 @@ let { Client: DiscordClient, Message } = require('discord.js'),
     { config: loadEnv } = require('dotenv')
 
 loadEnv()
-// require("discord-reply")
+
 let guildSettings = []
 
 let client = new DiscordClient();
@@ -237,7 +237,7 @@ function log(mod, user, action, msg){
     // let actions = new Map()
     let {colour, title, fielddata} = Actions[action]
 
-    const logEmbed = new Discord.MessageEmbed()
+    const logEmbed = new MessageEmbed()
         .setThumbnail(user.avatarURL())
         .setColor(colour)
         .setTitle(title)
@@ -257,7 +257,7 @@ client.on('guildMemberAdd', async member => {
     const config = guildSettings.find(config => config.guildID == member.guild.id)
     if (config.welcomeEnabled && member.guild.systemChannel != null){
 
-        var greetingEmbed = new Discord.MessageEmbed()
+        var greetingEmbed = new MessageEmbed()
             .setColor('#000000')
             .setTitle(config.welcomeTitle.replace('{member}', member.user.username).replace('{server}', member.guild.name))
             .setDescription(config.welcomeMessage.replace('{member}', member.user.username).replace('{server}', member.guild.name))
@@ -379,7 +379,7 @@ client.on('message', async message => {
                     .catch(console.error);
                 message.member.roles.add(newRole)
                 console.log(`Given role "${colour}" to ${message.author.tag}`)
-                const colourEmbed = new Discord.MessageEmbed()
+                const colourEmbed = new MessageEmbed()
                     .setThumbnail(message.author.avatarURL())
                     .setColor(colour)
                     .setTitle(colour)
@@ -391,7 +391,7 @@ client.on('message', async message => {
                 console.log("Role already exists!")
                 message.member.roles.add(role)
                 console.log(`Given role "${role.name}" to ${message.author.tag}`)
-                const colourEmbed = new Discord.MessageEmbed()
+                const colourEmbed = new MessageEmbed()
                     .setThumbnail(message.author.avatarURL())
                     .setColor(colour)
                     .setTitle(colour)
@@ -613,7 +613,7 @@ client.on('message', async message => {
             message.channel.send(noPerms(message, config))
         }
         else{
-            const attachment = new Discord.MessageAttachment(`${config.guildID}_censored.txt`, `censored.txt`)
+            const attachment = new MessageAttachment(`${config.guildID}_censored.txt`, `censored.txt`)
             message.author.send(attachment)
         }
     }
@@ -634,7 +634,7 @@ client.on('message', async message => {
     
     else if (message.content.startsWith(config.prefix + "settings ") || message.content.startsWith(config.prefix + "config ")){
         if (!msgArray[1]) {
-            var settingsEmbed = new Discord.MessageEmbed()
+            var settingsEmbed = new MessageEmbed()
                 .setColor('#000000')
                 .setTitle(`${message.guild.name} configuration`)
                 .setThumbnail(message.guild.iconURL())
@@ -653,7 +653,7 @@ client.on('message', async message => {
                 message.channel.send(noPerms(message, config))
             }
             else if (msgArray[1] == "help"){
-                var helpEmbed = new Discord.MessageEmbed()
+                var helpEmbed = new MessageEmbed()
                     .setColor('#000000')
                     .setTitle('Config help')
                     .addField('Reload config:', `\`${config.prefix}config reload\``)
@@ -783,7 +783,7 @@ client.on('message', async message => {
     }
     else if (message.content == (config.prefix + "settings") || message.content == (config.prefix + "config")){
         if (!msgArray[1]) {
-            var settingsEmbed = new Discord.MessageEmbed()
+            var settingsEmbed = new MessageEmbed()
                 .setColor('#000000')
                 .setTitle(`${message.guild.name} configuration`)
                 .setThumbnail(message.guild.iconURL())
@@ -816,7 +816,7 @@ client.on('message', async message => {
             if (rolemap.length > 1024) rolemap = "Too many roles!";
             if (!rolemap) rolemap = "None";
 
-            const UIEmbed = new Discord.MessageEmbed()
+            const UIEmbed = new MessageEmbed()
                 .setThumbnail(user.displayAvatarURL( { size: 1024 } ))
                 .setColor("#000000")
                 .setTitle(`${user.tag}'s info`)
@@ -832,7 +832,7 @@ client.on('message', async message => {
     }
 
     else if (message.content.startsWith(config.prefix + "serverinfo") || message.content.startsWith(config.prefix + "si")) {
-        const ServerEmbed = new Discord.MessageEmbed()
+        const ServerEmbed = new MessageEmbed()
             .setThumbnail(message.guild.iconURL())
             .setColor("#000000")
             .setTitle(`${message.guild.name} info`)
@@ -871,7 +871,7 @@ client.on('message', async message => {
                 message.channel.send("You should play all the maps!")
             }
             else{
-                const mapEmbed = new Discord.MessageEmbed()
+                const mapEmbed = new MessageEmbed()
                     .setColor('#E9A331')
                     .setTitle('Map Selection')
                 let mapList = ''
@@ -886,8 +886,8 @@ client.on('message', async message => {
         }
         else {
             randomMap = Math.floor(Math.random() * MapPool.length)
-            const attachment = new Discord.MessageAttachment(`./csgo_maps/${MapPool[randomMap].toLowerCase()}.jpg`, `${MapPool[randomMap]}.jpg`)
-            const mapEmbed = new Discord.MessageEmbed()
+            const attachment = new MessageAttachment(`./csgo_maps/${MapPool[randomMap].toLowerCase()}.jpg`, `${MapPool[randomMap]}.jpg`)
+            const mapEmbed = new MessageEmbed()
                 .setColor('#E9A331')
                 .setTitle('Map Selection')
                 .attachFiles(attachment)
@@ -899,7 +899,7 @@ client.on('message', async message => {
 
     else if (message.content.startsWith(config.prefix + "roll")) {
         if (msgArray[1] && msgArray[1] == "monke"){
-                const diceEmbed = new Discord.MessageEmbed()
+                const diceEmbed = new MessageEmbed()
                 .setColor('#ffffff')
                 .setTitle(`Rolling a D-monke!`)
                 .setImage(`https://media.discordapp.net/attachments/845067108689248297/857595998385471508/monke.gif`)
@@ -910,7 +910,7 @@ client.on('message', async message => {
         else{
             var length = 6
             if (msgArray[1] && parseInt(msgArray[1])) {length = parseInt(msgArray[1])}
-            const diceEmbed = new Discord.MessageEmbed()
+            const diceEmbed = new MessageEmbed()
                 .setColor('#ffffff')
                 .setTitle(`Rolling a D-${length}!`)
                 .setImage(`https://media.discordapp.net/attachments/433726065731698691/856310943448432660/roll.gif`)
@@ -928,7 +928,7 @@ client.on('message', async message => {
             if (!member) {message.channel.send("Please mention a user")}
             else if (!msgArray[2]) {message.channel.send("Please enter a message")}
             else {
-                let dmEmbed = new Discord.MessageEmbed()
+                let dmEmbed = new MessageEmbed()
                     .setColor("#f42069")
                     .setTitle("Direct Message")
                     .setAuthor(message.author.username, message.author.avatarURL())
@@ -953,7 +953,16 @@ client.on('message', async message => {
     }
 
     else if (message.content.includes("<@!844980897912455238>")){
-        message.lineReply("what")
+        client.api.channels[message.channel.id].messages.post({
+            data: {
+                content: "what",
+                    message_reference: {
+                    message_id: message.id,
+                    channel_id: message.channel.id,
+                    guild_id: message.guild.id
+                }
+            }
+        })
     }
 
     else if (message.content.startsWith(config.prefix + "help")){
@@ -1110,7 +1119,7 @@ function play(guild, song) {
         })
         .on("error", error => console.error(error));
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-    startEmbed = new Discord.MessageEmbed()
+    startEmbed = new MessageEmbed()
         .setColor('#f42069')
         .setTitle("Now Playing")
         .setURL(song.url)
