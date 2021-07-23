@@ -23,22 +23,21 @@ let delay = ms => new Promise(res => setTimeout(res, ms));
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
-
     
-    let guilds = client.guilds.cache;
+    let guilds = client.guilds.cache.map(guild => guild);
     console.log(`The bot is in ${guilds.length} guilds`);
 
     console.log("\x1b[35m%s\x1b[0m", `Loading guild settings:`)
     for(let guild of guilds) {
         let exists = fs.existsSync(`${guild.id}_config.json`)
-        await (exists ? loadSettings(e.id) : createSettings(e.id))
+        await (exists ? loadConfig(guild) : createConfig(guild))
     }
 });
 
 client.on('guildCreate', async guild => {
     console.log("\x1b[32m", `Joined new guild: ${guild.name}`)
     let exists = fs.existsSync(`${guild.id}_config.json`)
-    await (exists ? loadSettings(guild.id) : createSettings(guild.id))
+    await (exists ? loadConfig(guild) : createConfig(guild))
 })
 
 client.on('guildDelete', async guild => {
@@ -1132,6 +1131,6 @@ function printQueue(message, serverQueue){
 }
 
 let [arg] = process.argv.slice(2);
-let token = process.env.TOKEN;
+let token = process.env.BOT_TOKEN;
 if (arg == "dev") { token = process.env.DEV_TOKEN }
 client.login(token);
