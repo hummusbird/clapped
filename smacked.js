@@ -30,7 +30,7 @@ client.on('ready', async () => {
 
     console.log("\x1b[35m%s\x1b[0m", `Loading guild settings:`)
     for(let guild of guilds) {
-        let exists = await fs.promises(`${guild.id}_config.json`)
+        let exists = fs.existsSync(`${guild.id}_config.json`)
         await (exists ? loadSettings(e.id) : createSettings(e.id))
     }
 });
