@@ -1,33 +1,43 @@
-const Discord = require('discord.js');
-const fs = require("fs")
-const ytdl = require("ytdl-core");
-const moment = require('moment');
-require('dotenv').config();
-require("discord-reply")
-var ytAPI = require('youtube-search-api');
-const client = new Discord.Client();
-const uptime = new Date()
-var guildSettings = []
-const queue = new Map();
+let { Client: DiscordClient } = require('discord.js'),
+    fs = require('fs'),
+    ytdl = require("ytdl-core"),
+    moment = require('moment'),
+    ytAPI = require('youtube-search-api'),
+    { config: loadEnv } = require('dotenv')
 
-const delay = ms => new Promise(res => setTimeout(res, ms));
+loadEnv()
+// require("discord-reply")
+let guildSettings = []
+
+let client = new DiscordClient();
+
+/** @type {Map<string, any>} */
+let queue = new Map();
+
+/** 
+ * Waits a set amount of time before continuing
+ * @param {number} ms - Time in milliseconds to delay 
+ * 
+*/
+let delay = ms => new Promise(res => setTimeout(res, ms));
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
-    const guilds = client.guilds.cache.map(guild => guild);
+    
+    let guilds = client.guilds.cache;
     console.log(`The bot is in ${guilds.length} guilds`);
 
     console.log("\x1b[35m%s\x1b[0m", `Loading guild settings:`)
-    guilds.forEach(async e => {
-        let exists = await fs.promises.exists(`${e.id}_config.json`)
+    for(let guild of guilds) {
+        let exists = await fs.promises(`${guild.id}_config.json`)
         await (exists ? loadSettings(e.id) : createSettings(e.id))
-    })
+    }
 });
 
 client.on('guildCreate', async guild => {
     console.log("\x1b[32m", `Joined new guild: ${guild.name}`)
-    let exists = await fs.promises.exists(`${e.id}_config.json`)
+    let exists = fs.existsSync(`${guild.id}_config.json`)
     await (exists ? loadSettings(guild.id) : createSettings(guild.id))
 })
 
@@ -275,7 +285,7 @@ client.on('message', async message => {
     }
 
     else if (message.content.startsWith(config.prefix + "uptime")){
-        var time = moment.duration(moment().diff(uptime))
+        var time = moment.duration(moment().diff(message.client.readyAt))
         message.channel.send(`This bot has been up for ${time.days()} days, ${time.hours()} hours, ${time.minutes()} minutes and ${time.seconds()} seconds`)
     }
 
