@@ -20,15 +20,15 @@ client.on('ready', async () => {
 
     console.log("\x1b[35m%s\x1b[0m", `Loading guild settings:`)
     guilds.forEach(async e => {
-        if ( fs.existsSync(`${e.id}_config.json`) ) { loadConfig(e) }
-        else { createConfig(e) }        
+        let exists = await fs.promises.exists(`${e.id}_config.json`)
+        await (exists ? loadSettings(e.id) : createSettings(e.id))
     })
 });
 
-client.on('guildCreate', async Guild => {
-    console.log("\x1b[32m", `Joined new guild: ${Guild.name}`)
-    if ( fs.existsSync(`${Guild.id}_config.json`) ) { loadConfig(Guild) }
-    else { createConfig(Guild) }     
+client.on('guildCreate', async guild => {
+    console.log("\x1b[32m", `Joined new guild: ${guild.name}`)
+    let exists = await fs.promises.exists(`${e.id}_config.json`)
+    await (exists ? loadSettings(guild.id) : createSettings(guild.id))
 })
 
 client.on('guildDelete', async Guild => {
@@ -1090,6 +1090,7 @@ function printQueue(message, serverQueue){
     return(message.channel.send(`\`\`\`${songList}\`\`\``))
 }
 
-args = process.argv.slice(2);
-if (args[0] == "dev") { client.login(process.env.DEV_TOKEN) }
-else { client.login(process.env.BOT_TOKEN) }
+let [arg] = process.argv.slice(2);
+let token = process.env.TOKEN;
+if (arg == "dev") { token = process.env.DEV_TOKEN }
+client.login(token);
