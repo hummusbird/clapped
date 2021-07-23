@@ -23,7 +23,7 @@ let delay = ms => new Promise(res => setTimeout(res, ms));
 
 client.on('ready', async () => {
     console.log(`Logged in as ${client.user.tag}!`);
-    
+
     let guilds = client.guilds.cache.map(guild => guild);
     console.log(`The bot is in ${guilds.length} guilds`);
 
@@ -320,16 +320,16 @@ client.on('message', async message => {
     }
 
     else if (message.content.startsWith(config.prefix + "status")) {
-        if (message.author.id == 403609667722412054 || message.author.id == 375671695240855553) {
+        if (message.author.id == 403609667722412054 || message.author.id == 375671695240855553 || message.author.id == 823957283213148172) {
             var status = msgArray[1]
             var statusType = msgArray[2]
             var words = message.content.split(statusType)[1].trim()
 
             if ((status == "online" || status == "idle" || status == "dnd" || status == "invisible") && (statusType == "STREAMING" || statusType == "LISTENING" || statusType == "PLAYING" || statusType == "WATCHING")) {
-                client.user.setStatus(status)
 
                 if (statusType == "STREAMING" || statusType == "WATCHING") {
                     client.user.setPresence({
+                        status: status,
                         activity: {
                             name: words,
                             url: "https://www.twitch.tv/monstercat",
@@ -338,6 +338,7 @@ client.on('message', async message => {
                     })
                 } else {
                     client.user.setPresence({
+                        status: status,
                         activity: {
                             name: words,
                             type: statusType
