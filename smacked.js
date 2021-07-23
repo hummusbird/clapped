@@ -1,4 +1,4 @@
-let { Client: DiscordClient } = require('discord.js'),
+let { Client: DiscordClient, Message } = require('discord.js'),
     fs = require('fs'),
     ytdl = require("ytdl-core"),
     moment = require('moment'),
@@ -41,8 +41,8 @@ client.on('guildCreate', async guild => {
     await (exists ? loadSettings(guild.id) : createSettings(guild.id))
 })
 
-client.on('guildDelete', async Guild => {
-    console.log("\x1b[31m", `Kicked from Guild ${Guild.name}`)
+client.on('guildDelete', async guild => {
+    console.log("\x1b[31m", `Kicked from Guild ${guild.name}`)
 })
 
 // CONFIG FUNCTIONS
@@ -168,55 +168,86 @@ function writeConfig(config, guild){
     })
 }
 
+/** 
+ * @param {Message} msg 
+ * @param {"ban"|"kick"|"delete", "mute", "unmute", "purge", "config", "censor", "uncensor", "nick"} action
+ * */
 function log(mod, user, action, msg){
     const config = guildSettings.find(config => config.guildID == msg.guild.id)
-    if (!config.loggingEnabled) {return}
-    else {
-        var colour = "#000000"
-        var title = `${action} ${user.tag}`
-        var fielddata = `performed by ${mod.tag}`
+    if (!config.loggingEnabled) return
 
-        if (action == "ban"){ colour = "#ff3838" }
-        else if (action == "kick"){ colour = "#ff3838" }
-        else if (action == "delete"){ 
-            colour = "#ff8e38"
-            title = "Deleted message"
-            fielddata = "Censored by bot"
-        }
-        else if (action == "mute"){ colour = "#ffd138" }
-        else if (action == "unmute"){ colour = "#68d629" }
-        else if (action == "purge"){ 
-            colour = "#34ebc3"
-            title = `purged ${msg.channel.name}`
-        }
-        else if (action == "config"){ 
-            colour = "#ffffff"
-            title = `Config changed!`
-        }
-        else if (action == "censor") {
-            colour = "#ff3838"
-            title = "Censored phrase"
-        }
-        else if (action == "uncensor") {
-            colour = "#68d629"
-            title = "Uncensored phrase"
-        }
-        else if (action = "nick"){
-            colour = "#f42069"
-            title = "Changed Nickname"
-        }
-
-        const logEmbed = new Discord.MessageEmbed()
-            .setThumbnail(user.avatarURL())
-            .setColor(colour)
-            .setTitle(title)
-            .addFields(
-                { name: fielddata, value: msg },
-            )
-            .setTimestamp()
-        logChannel = msg.guild.channels.cache.find(logChannel => config.logChannel.id == logChannel.id)
-        logChannel.send(logEmbed)
+    /** @typedef {{colour?: string, title?: string, fielddata?: string}} LogMessage */
+    /** @type {LogMessage} */
+    let defaultActions = {
+        colour: "#000000",
+        title: `${action} ${user.tag}`,
+        fielddata: `performed by ${mod.tag}`
     }
+
+    /** @enum {LogMessage} */
+    let Actions = {
+        'ban': {
+            ...defaultActions,
+            colour: '#ff3838',
+        },
+        'kick': { 
+            ...defaultActions,
+            colour: '#ff3838'
+        },
+        'delete': {
+            ...defaultActions,
+            colour: '#ff8e38',
+            title: "Deleted message",
+            fielddata: "Censored by bot"
+        },
+        'mute': {
+            ...defaultActions,
+            colour: '#ffd138',
+        },
+        'unmute': {
+            ...defaultActions,
+            colour: '#68d629',
+        },
+        'purge': {
+            ...defaultActions,
+            colour: '#34ebc3',
+            title: `purged ${msg.channel.name}`,
+        },
+        'config': {
+            ...defaultActions,
+            colour: '#fff',
+        },
+        'censor': {
+            ...defaultActions,
+            colour: '#ff3838',
+            title: "Censored phrase"
+        },
+        'uncensor': {
+            ...defaultActions,
+            colour: '#68d629',
+            title: "Uncensored phrase"
+        },
+        'nick': {
+            ...defaultActions,
+            colour: '#f42069',
+            title: 'Changed nickname',
+        }
+    }
+
+    // /** @type {Map<Actions, LogMessage>} */
+    // let actions = new Map()
+    let {colour, title, fielddata} = Actions[action]
+
+    const logEmbed = new Discord.MessageEmbed()
+        .setThumbnail(user.avatarURL())
+        .setColor(colour)
+        .setTitle(title)
+        .addFields(
+            { name: fielddata, value: msg },
+        )
+        .setTimestamp()
+    logChannel = msg.guild.channels.cache.find(logChannel => config.logChannel.id == logChannel.id)
+    logChannel.send(logEmbed)
 }
 
 function noPerms(message, config){
