@@ -325,7 +325,7 @@ client.on('message', async message => {
             var statusType = msgArray[2]
             var words = message.content.split(statusType)[1].trim()
 
-            if ((status == "online" || status == "idle" || status == "dnd" || status == "invisible") && (statusType == "STREAMING" || statusType == "LISTENING" || statusType == "PLAYING" || statusType == "WATCHING")) {
+            if ((status == "online" || status == "idle" || status == "dnd" || status == "invisible") && (statusType == "STREAMING" || statusType == "LISTENING" || statusType == "PLAYING" || statusType == "WATCHING" || statusType == "COMPETING")) {
 
                 if (statusType == "STREAMING" || statusType == "WATCHING") {
                     client.user.setPresence({
