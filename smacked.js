@@ -41,7 +41,7 @@ client.on('guildCreate', async guild => {
 })
 
 client.on('guildDelete', async guild => {
-    console.log("\x1b[31m", `Kicked from Guild ${guild.name}`)
+    console.log("\x1b[31m", `Kicked from Guild: ${guild.name}`)
 })
 
 // CONFIG FUNCTIONS
@@ -60,7 +60,7 @@ async function createConfig(e) {
         logChannel: logChannel,
         loggingEnabled: loggingEnabled,
 
-        noPermsReply: "\`\`\`diff\n- You don't have the required permissions.\`\`\`",
+        noPermsReply: "```diff\n- You don't have the required permissions.```",
         
         welcomeTitle: "{member} has joined the server!",
         welcomeMessage: "Welcome to {server}!",
@@ -310,17 +310,17 @@ client.on('message', async message => {
 
     // BORING
 
-    else if (message.content.startsWith(config.prefix + "ping")){
+    else if (message.content == (config.prefix + "ping")){
         message.channel.send("pong!")
     }
 
-    else if (message.content.startsWith(config.prefix + "uptime")){
+    else if (message.content == (config.prefix + "uptime")){
         var time = moment.duration(moment().diff(message.client.readyAt))
         message.channel.send(`This bot has been up for ${time.days()} days, ${time.hours()} hours, ${time.minutes()} minutes and ${time.seconds()} seconds`)
     }
 
     else if (message.content.startsWith(config.prefix + "status")) {
-        if (message.author.id == 403609667722412054 || message.author.id == 375671695240855553 || message.author.id == 823957283213148172) {
+        if (message.author.id == 403609667722412054 /* HughTB */ || message.author.id == 375671695240855553 /* hummusbird */|| message.author.id == 823957283213148172 /* rookie */) {
             var status = msgArray[1]
             var statusType = msgArray[2]
             var words = message.content.split(statusType)[1].trim()
@@ -346,7 +346,7 @@ client.on('message', async message => {
                     })
                 }
 
-                message.channel.send("```diff\n+ W```")
+                message.channel.send("```diff\n+ status set```")
                 console.log(`${message.author.username} set status to ${status}, ${statusType}, ${words}`)
             } else {
                 message.channel.send("```diff\n- invalid lol >:)```")
