@@ -826,7 +826,7 @@ client.on('message', async message => {
                 .addField('Account created:', moment(user.createdAt).format('llll'), true)
                 .addField('Joined Guild:', moment(member.joinedAt).format('llll'), true)
                 .addField('Nickname:', member.nickname || user.username, true)
-                .addField('Roles:', rolemap, true)
+                .addField('Roles:', rolemap.replace(', @everyone', ''), true)
                 .setFooter(user.id)
                 .setTimestamp()
             message.channel.send(UIEmbed)
@@ -839,11 +839,23 @@ client.on('message', async message => {
             .setThumbnail(message.guild.iconURL())
             .setColor("#000000")
             .setTitle(`${message.guild.name} info`)
-            .addField('Server created:', moment(message.guild.createdAt).format('llll'), true)
-            .addField('Member Count:', message.guild.memberCount, true)
-            .addField('Owner:', message.guild.owner, true)
+
+            .addField('Server created:', moment(message.guild.createdAt).format('llll'), false)
+
+            .addField('Owner:', message.guild.owner || "Bot account", true)
             .addField('Region:', message.guild.region, true)
-            .addField('Description:', message.guild.description || "Not set", true)
+            .addField('Vanity:', message.guild.vanityURLCode || "None", true)
+
+            .addField('Description:', message.guild.description || "Not set", false)
+
+            .addField('Members:', message.guild.memberCount, true)
+            .addField('Boosts:', message.guild.premiumSubscriptionCount, true)
+            .addField('Emojis:', message.guild.emojis.cache.size, true)
+
+            .addField('Roles:', message.guild.roles.cache.size, true)
+            .addField('Channels:', message.guild.channels.cache.size, true)
+            .addField('Enabled Features:', message.guild.features.length || "None", true)
+
             .setFooter(message.guild.id)
             .setTimestamp()
         message.channel.send(ServerEmbed)
