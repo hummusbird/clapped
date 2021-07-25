@@ -136,10 +136,11 @@ async function createConfig(e) {
             console.log("\x1b[33m%s\x1b[0m","No Censor list. Creating...")
         })
     }
-    console.log("\x1b[32m%s\x1b[0m",`${e.name} successfully loaded.`)
+    console.log("\x1b[32m%s\x1b[0m",`${e.name} successfully created.`)
 }
 
 async function loadConfig(e) {
+    console.log(`loading ${e.name} config file.`)
     if (guildSettings.find(config => config.guildID == e.id)){
         var index = guildSettings.indexOf(e)
         var data = fs.readFileSync(`${e.id}_config.json`, 'utf8')
@@ -150,13 +151,14 @@ async function loadConfig(e) {
         try {
             var data = fs.readFileSync(`${e.id}_config.json`, 'utf8')
             guildSettings.push(JSON.parse(data))
-            console.log(`loading ${e.name} config file.`)
+            console.log("\x1b[32m%s\x1b[0m",`${e.name} successfully loaded.`)
         } 
         catch(error) {
             console.log(error);
             return -1
         }
     }
+    
 }
 
 function writeConfig(config, guild){
