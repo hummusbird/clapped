@@ -218,7 +218,7 @@ function log(mod, user, action, msg){
         },
         'config': {
             ...defaultActions,
-            colour: '#fff',
+            colour: '#ffffff',
         },
         'censor': {
             ...defaultActions,
@@ -709,6 +709,7 @@ client.on('message', async message => {
                     config.autoRole = newRole
                     writeConfig(config, message.guild)
                     message.channel.send(`\`\`\`diff\n+ Autorole has been enabled and set to <@&${config.autoRole.id}>\`\`\``)
+                    log(message.author, message.author, "config", message)
                 }
                 else{
                     message.channel.send('```diff\n- Please mention a role to add```')
