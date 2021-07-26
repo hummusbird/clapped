@@ -1015,6 +1015,7 @@ ${config.prefix}serverinfo // Displays this server's information
 ${config.prefix}roll [int] // Roll a die
 ${config.prefix}map [mapgroup] [int] // Chooses some CS:GO maps for you to play
 ${config.prefix}dm [user] [message] // Sends a direct message to the mentioned user
+${config.prefix}servers // lists all servers this bot is in
 + AUDIO COMMANDS
 ${config.prefix}play [string] // Plays YouTube audio in your current channel
 ${config.prefix}skip // Skips to next song in queue
