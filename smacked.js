@@ -1124,7 +1124,6 @@ async function execute(message, serverQueue) {
         serverQueue.songs.push(song);
         return message.channel.send(`\`\`\`diff\n+ ${song.title} has been added to the queue!\`\`\``);
     }
-
 }
 
 function skip(message, serverQueue) {
