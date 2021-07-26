@@ -275,6 +275,9 @@ client.on('guildMemberAdd', async member => {
         console.log(`Adding autorole to new members in ${member.guild}!`)
         var role = member.guild.roles.cache.find(role => config.autoRole.id == role.id)
         member.roles.add(role)
+        .catch(function() {
+            console.log(`autorole failed to add, most likely deleted.`)
+        })
 
     }
 })
