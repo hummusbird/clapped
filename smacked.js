@@ -68,7 +68,9 @@ async function createConfig(e) {
 
         leaveMessage: "{member} has abandonded {server}!",
         leaveEnabled: true,
-        mutedRole: e.roles.cache.find(mutedRole => mutedRole.name == "Muted")
+        mutedRole: e.roles.cache.find(mutedRole => mutedRole.name == "Muted"),
+
+        autoRole: false
     }
 
     fs.appendFile(`${e.id}_config.json`, JSON.stringify(config), function (err) {
@@ -268,6 +270,13 @@ client.on('guildMemberAdd', async member => {
 
         member.guild.systemChannel.send(greetingEmbed)
     }
+    
+    if (config.autoRole) {
+        console.log(`Adding autorole to new members in ${member.guild}!`)
+        var role = member.guild.roles.cache.find(role => config.autoRole.id == role.id)
+        member.roles.add(role)
+
+    }
 })
 
 client.on ('guildMemberRemove', async member => {
@@ -314,6 +323,11 @@ client.on('message', async message => {
 
     else if (message.content == (config.prefix + "ping")){
         message.channel.send("pong!")
+    }
+    
+    else if (message.content == (config.prefix + "servers")) {
+        let guilds = client.guilds.cache.map(guild => guild);
+        message.channel.send(`\`\`\`diff\n+ This bot is in ${guilds.length} servers:\n- ${guilds.join('\n- ')}\`\`\``)
     }
 
     else if (message.content == (config.prefix + "uptime")){
@@ -635,18 +649,22 @@ client.on('message', async message => {
         }
     }
     
-    else if (message.content.startsWith(config.prefix + "settings ") || message.content.startsWith(config.prefix + "config ")){
+    else if (message.content.startsWith(config.prefix + "settings") || message.content.startsWith(config.prefix + "config")){
         if (!msgArray[1]) {
+            let iconExtention = ".png"
+            if (message.guild.icon.startsWith("a_")) { iconExtention = ".gif"}
             var settingsEmbed = new MessageEmbed()
                 .setColor('#000000')
                 .setTitle(`${message.guild.name} configuration`)
-                .setThumbnail(message.guild.iconURL())
+                .setThumbnail(`https://cdn.discordapp.com/icons/${message.guild.id}/${message.guild.icon}${iconExtention}?size=1024`)
                 .addField('Prefix:', `\`${config.prefix}\`` , true)
                 .addField('Log Channel:', config.loggingEnabled ? `<#${config.logChannel.id}>` : "Disabled", true)
+                .addField('Autorole:', config.autoRole ? `<@&${config.autoRole.id}>` : 'Disabled', true)
                 .addField('Permission message:', `${config.noPermsReply}`, false)
                 .addField('Welcome title:', config.welcomeEnabled ? `\`${config.welcomeTitle}\`` : "Disabled", true)
                 .addField('Welcome message:', config.welcomeEnabled ? `\`${config.welcomeMessage}\`` : "Disabled", true)
                 .addField('Leave message', config.leaveEnabled ? `\`${config.leaveMessage}\`` : "Disabled", false)
+
                 .setFooter(config.guildID)
                 .setTimestamp()
             message.channel.send(settingsEmbed)
@@ -667,6 +685,7 @@ client.on('message', async message => {
                     .addField('"Welcome" message:', `\`${config.prefix}config welcomemessage [string]\``)
                     .addField('"Welcome" on/off:', `\`${config.prefix}config welcome [true/false]\``)
                     .addField('"leave" message:', `\`${config.prefix}config leavemessage [string/false]\``)
+                    .addField('Autorole:', `\`${config.prefix}config autorole [roleID/false]\``)
                     .addField('Modifiers:', `\`{member}\` is replaced with username, \`{server}\` with the server's name`)
                 message.channel.send(helpEmbed)
             }
@@ -679,9 +698,23 @@ client.on('message', async message => {
                     log(message.author, message.author, "config", message)
                 }
             }
+            else if (msgArray[1] == "autorole"){
+                if(!msgArray[2]){
+                    message.channel.send(config.autoRole ? `\`\`\`diff\n+ Autorole is set to <@&${config.autoRole.id}>\`\`\`` : '```diff\n- Autorole is currently disabled```')
+                }
+                else if (message.mentions.roles.first()) {
+                    let newRole = message.mentions.roles.first()
+                    config.autoRole = newRole
+                    writeConfig(config, message.guild)
+                    message.channel.send(`\`\`\`diff\n+ Autorole has been enabled and set to <@&${config.autoRole.id}>\`\`\``)
+                }
+                else{
+                    message.channel.send('```diff\n- Please mention a role to add```')
+                }
+            }
             else if (msgArray[1] == "log"){
                 if (!msgArray[2]) {
-                    if (!config.loggingEnabled) {message.channel.send(`\`\`\`diff\n- Logging is currently disabled.\`\`\``)}
+                    if (!config.loggingEnabled) {message.channel.send('```diff\n- Logging is currently disabled.```')}
                     else {message.channel.send(`\`\`\`diff\n+ Logging is currently set to #${config.logChannel.name}\`\`\``)}
                 }
                 else {
@@ -689,7 +722,7 @@ client.on('message', async message => {
                         config.loggingEnabled = false
                         config.logChannel = null
                         writeConfig(config, message.guild)
-                        message.channel.send(`\`\`\`diff\n- Logging has been disabled!\`\`\``)
+                        message.channel.send('```diff\n- Logging has been disabled!```')
                     }
                     else if (message.mentions.channels.first()){
                         config.loggingEnabled = true
@@ -784,23 +817,6 @@ client.on('message', async message => {
             }
         }
     }
-    else if (message.content == (config.prefix + "settings") || message.content == (config.prefix + "config")){
-        if (!msgArray[1]) {
-            var settingsEmbed = new MessageEmbed()
-                .setColor('#000000')
-                .setTitle(`${message.guild.name} configuration`)
-                .setThumbnail(message.guild.iconURL())
-                .addField('Prefix:', `\`${config.prefix}\`` , true)
-                .addField('Log Channel:', config.loggingEnabled ? `<#${config.logChannel.id}>` : "Disabled", true)
-                .addField('Permission message:', `${config.noPermsReply}`, false)
-                .addField('Welcome title:', config.welcomeEnabled ? `\`${config.welcomeTitle}\`` : "Disabled", true)
-                .addField('Welcome message:', config.welcomeEnabled ? `\`${config.welcomeMessage}\`` : "Disabled", true)
-                .addField('Leave message', config.leaveEnabled ? `\`${config.leaveMessage}\`` : "Disabled", false)
-                .setFooter(config.guildID)
-                .setTimestamp()
-            message.channel.send(settingsEmbed)
-        }
-    }
     // FUN
 
     else if (message.content.startsWith(config.prefix + "avatar") || message.content.startsWith(config.prefix + "av") || message.content.startsWith(config.prefix + "pfp")){
@@ -826,7 +842,7 @@ client.on('message', async message => {
                 .addField('Account created:', moment(user.createdAt).format('llll'), true)
                 .addField('Joined Guild:', moment(member.joinedAt).format('llll'), true)
                 .addField('Nickname:', member.nickname || user.username, true)
-                .addField('Roles:', rolemap.replace(', @everyone', ''), true)
+                .addField('Roles:', rolemap.replace(', @everyone', ''), false)
                 .setFooter(user.id)
                 .setTimestamp()
             message.channel.send(UIEmbed)
@@ -834,9 +850,11 @@ client.on('message', async message => {
         else { message.channel.send("Couldn't find user!") }
     }
 
-    else if (message.content.startsWith(config.prefix + "serverinfo") || message.content.startsWith(config.prefix + "si")) {
+    else if (message.content == (config.prefix + "serverinfo") || message.content == (config.prefix + "si")) {
+        let iconExtention = ".png"
+        if (message.guild.icon.startsWith("a_")) { iconExtention = ".gif"}
         const ServerEmbed = new MessageEmbed()
-            .setThumbnail(message.guild.iconURL())
+            .setThumbnail(`https://cdn.discordapp.com/icons/${message.guild.id}/${message.guild.icon}${iconExtention}?size=1024`)
             .setColor("#000000")
             .setTitle(`${message.guild.name} info`)
 
@@ -856,9 +874,11 @@ client.on('message', async message => {
             .addField('Channels:', message.guild.channels.cache.size, true)
             .addField('Enabled Features:', message.guild.features.length || "None", true)
 
+            .setImage(`https://cdn.discordapp.com/banners/${message.guild.id}/${message.guild.banner}.jpg?size=2048`)
             .setFooter(message.guild.id)
             .setTimestamp()
         message.channel.send(ServerEmbed)
+
     }
 
     else if (message.content.startsWith(config.prefix + "map")) {
@@ -959,7 +979,7 @@ client.on('message', async message => {
     }
 
     else if (parseInt(message.content).toString().length == 18) {
-        muckEmbed = new Discord.MessageEmbed()
+        muckEmbed = new MessageEmbed()
             .setColor("#FFC300")
             .setTitle("is that a **MUCK** Invite Code???")
             .setDescription(`${message.author} IS PLAYING MUCK!!!`)
