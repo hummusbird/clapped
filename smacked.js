@@ -278,7 +278,6 @@ client.on('guildMemberAdd', async member => {
         .catch(function() {
             console.log(`autorole failed to add, most likely deleted.`)
         })
-
     }
 })
 
