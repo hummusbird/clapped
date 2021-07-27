@@ -19,4 +19,4 @@ jobs:
           host: ${{secrets.SSH_HOST}}
           username: ${{secrets.SSH_USERNAME}}
           password: ${{secrets.SSH_PASSWORD}}
-          command: cd desktop/smacked && git pull && pm2 restart smacked
+          command: cd desktop/clapped && git pull && pm2 restart clapped
