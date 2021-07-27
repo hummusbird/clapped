@@ -1,4 +1,4 @@
-# smacked-bot
+# clapped-bot
 
 check projects tab or die
 
