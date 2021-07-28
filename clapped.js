@@ -350,7 +350,7 @@ client.on('message', async message => {
                         status: status,
                         activity: {
                             name: words,
-                            url: "https://www.twitch.tv/hummusbird",
+                            url: "https://www.twitch.tv/hummusbirb",
                             type: statusType
                         }
                     })
