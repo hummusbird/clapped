@@ -377,8 +377,8 @@ client.on('message', async message => {
     else if (message.channel.name == "colours"){
 
         if (message.content.startsWith("#")){
-
             var colour = message.content.substring(0,7)
+            if( !(/^#([0-9a-f]{6})$/i.test(colour)) ) { return message.delete() }
             var role = message.guild.roles.cache.find(role => role.name === colour)
             var memberRole = message.member.roles.cache.find(role => role.name.startsWith('#'))
 
@@ -419,7 +419,7 @@ client.on('message', async message => {
                 message.delete()
             }
         }
-        else{ message.delete() }
+        else { message.delete() }
     }
 
     // MODERATION
