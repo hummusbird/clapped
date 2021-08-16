@@ -378,7 +378,16 @@ client.on('message', async message => {
 
         if (message.content.startsWith("#")){
             var colour = message.content.substring(0,7)
-            if( !(/^#([0-9a-f]{6})$/i.test(colour)) ) { return message.delete() }
+            if( !(/^#([0-9a-f]{6}|[0-9a-f]{3})$/i.test(colour)) ) { return message.delete() }
+
+            if(colour.length == 4) {
+                red = colour.substring(1,2)
+                green = colour.substring(2,3)
+                blue = colour.substring(3,4)
+                colour = '#' + red + red + green + green + blue + blue
+                console.log(colour)
+            }
+
             var role = message.guild.roles.cache.find(role => role.name === colour)
             var memberRole = message.member.roles.cache.find(role => role.name.startsWith('#'))
 
