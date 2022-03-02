@@ -1,4 +1,4 @@
-let { Client: DiscordClient, Message, MessageEmbed, MessageAttachment } = require('Discord.js'),
+let { Client: DiscordClient, Message, MessageEmbed, MessageAttachment } = require('discord.js'),
     fs = require('fs'),
     ytdl = require("ytdl-core"),
     moment = require('moment'),
