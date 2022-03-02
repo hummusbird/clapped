@@ -942,19 +942,17 @@ client.on('message', async message => {
             if (num >= MapPool.length) {
                 num = MapPool.length
             }
-            else{
-                const mapEmbed = new MessageEmbed()
-                    .setColor('#E9A331')
-                    .setTitle('Map Selection')
-                let mapList = ''
-                for (let i = 0; i < num; i++ ) {
-                    map = MapPool[Math.floor(Math.random() * MapPool.length)]
-                    mapList += `\n${map}`
-                    MapPool.splice(MapPool.indexOf(map), 1)
-                }
-                mapEmbed.addField('You should play:', `\`\`\`${mapList}\`\`\``)
-                message.channel.send(mapEmbed)
+            const mapEmbed = new MessageEmbed()
+                .setColor('#E9A331')
+                .setTitle('Map Selection')
+            let mapList = ''
+            for (let i = 0; i < num; i++ ) {
+                map = MapPool[Math.floor(Math.random() * MapPool.length)]
+                mapList += `\n${map}`
+                MapPool.splice(MapPool.indexOf(map), 1)
             }
+            mapEmbed.addField('You should play:', `\`\`\`${mapList}\`\`\``)
+            message.channel.send(mapEmbed)
         }
         else {
             randomMap = Math.floor(Math.random() * MapPool.length)
