@@ -659,6 +659,31 @@ client.on('message', async message => {
             log(message.author, user.user, "nick", message)
         }
     }
+
+    else if (message.content.startsWith(config.prefix + "massnick")) {
+        if (!message.member.hasPermission('MANAGE_NICKNAMES')) { return message.channel.send(noPerms(message, config)) }
+        else {
+            var user = message.mentions.members.first() || message.member
+            nickname = message.content.replace(msgArray[0], '').replace(user, '').replace(`<@!${user.id}>`, '').trim()
+
+            let failed = 0;
+
+            message.guild.members.fetch().then((members) => {
+                members.forEach((member) => {
+                    member.setNickname(nickname)
+                    .catch(function() {
+                        failed = 1
+                        console.log(`failed to change ${member.user.username}'s nick`)
+                    })
+                });
+            });
+
+            message.channel.send('```diff\n- Failed to change ' + failed + ' nicknames```')
+            
+            console.log(`${message.author.username} set all nicknames to ${nickname}`)
+            log(message.author, message.author, "nick", message)
+        }
+    }
     
     else if (message.content.startsWith(config.prefix + "settings") || message.content.startsWith(config.prefix + "config")){
         if (!msgArray[1]) {
