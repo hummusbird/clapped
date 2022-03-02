@@ -922,13 +922,13 @@ client.on('message', async message => {
         let MapPool;
 
         if (msgArray[1] == "reserve"){
-            MapPool = ['Train', 'Cache', 'Grind', 'Mocha'] 
+            MapPool = ['Train', 'Cache', 'Iris', 'Climb'] 
         }
         else if (msgArray[1] == "hostage"){
             MapPool = ['Militia', 'Agency', 'Office', 'Italy', 'Assault']
         }
-        else if (msgArray[1] == "wingman"){
-            MapPool = ['Calavera', 'Lake', 'Pitstop', 'Shortdust', 'Shortnuke']
+        else if (msgArray[1] == "wingman" || msgArray[1] == "wm"){
+            MapPool = ['Crete', 'Lake', 'Hive', 'Shortdust', 'Shortnuke']
         }
         else if (msgArray[1] == "nuke"){
             MapPool = ['Nuke','Nuke','Nuke','Nuke','Nuke','Nuke','Nuke','Nuke','Nuke', 'Nuke']
@@ -940,7 +940,7 @@ client.on('message', async message => {
         if ((msgArray[1] && parseInt(msgArray[1]) && parseInt(msgArray[1]) > 1) || (msgArray[2] && parseInt(msgArray[2])) && parseInt(msgArray[2]) > 1){
             let num = parseInt(msgArray[1]) || parseInt(msgArray[2])
             if (num >= MapPool.length) {
-                message.channel.send("You should play all the maps!")
+                num = MapPool.length
             }
             else{
                 const mapEmbed = new MessageEmbed()
