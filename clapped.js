@@ -15,5 +15,5 @@ client.on('ready', async () => {
 
 let [arg] = process.argv.slice(2);
 let token = process.env.BOT_TOKEN;
-if (arg == "dev") { token = process.env.DEV_TOKEN }
+if (arg == "--dev") { token = process.env.DEV_TOKEN }
 client.login(token);
