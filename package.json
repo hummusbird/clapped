@@ -1,24 +1,22 @@
 {
-  "name": "smacked-bot",
-  "version": "1.1.0",
+  "name": "clapped",
+  "version": "1.0.0",
   "description": "",
-  "main": "smacked.js",
+  "main": "clapped.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "hummusbird",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hummusbird/clapped.git"
+  },
+  "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hummusbird/clapped/issues"
+  },
+  "homepage": "https://github.com/hummusbird/clapped#readme",
   "dependencies": {
-    "@discordjs/opus": "^0.5.3",
-    "discord-reply": "^0.1.2",
-    "discord-youtube-api": "^0.1.0",
-    "discord.js": "^12.5.3",
-    "dotenv": "^10.0.0",
-    "ffmpeg": "^0.0.4",
-    "fluent-ffmpeg": "^2.1.2",
-    "moment": "^2.29.1",
-    "nvm": "^0.0.4",
-    "youtube-search-api": "^1.0.10",
-    "ytdl-core": "^4.8.3"
+    "discord.js": "^12.5.3"
   }
 }
