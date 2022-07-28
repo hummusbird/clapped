@@ -16,7 +16,7 @@
     "dotenv": "^10.0.0",
     "ffmpeg": "^0.0.4",
     "fluent-ffmpeg": "^2.1.2",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "nvm": "^0.0.4",
     "youtube-search-api": "^1.0.10",
     "ytdl-core": "^4.8.3"
