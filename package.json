@@ -9,7 +9,7 @@
   "author": "hummusbird",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/opus": "^0.5.3",
+    "@discordjs/opus": "^0.8.0",
     "discord-reply": "^0.1.2",
     "discord-youtube-api": "^0.1.0",
     "discord.js": "^12.5.3",
